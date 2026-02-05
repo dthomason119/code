@@ -58,6 +58,26 @@ interface Ethernet1/4
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
 
+interface Ethernet1/5
+  description TO_LEAF-05
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.8/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/6
+  description TO_LEAF-06
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.10/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
 ! ========================================
 ! OSPF Underlay Configuration
 ! ========================================
@@ -98,6 +118,22 @@ router bgp 65000
 
   ! BGP Peering to LEAF-04
   neighbor 10.255.255.14
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+  ! BGP Peering to LEAF-05
+  neighbor 10.255.255.15
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+  ! BGP Peering to LEAF-06
+  neighbor 10.255.255.16
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
