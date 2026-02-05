@@ -1,0 +1,105 @@
+! ========================================
+! Nexus 93180YC-FX2 - SPINE-01
+! BGP EVPN VXLAN Configuration
+! ========================================
+
+hostname SPINE-01
+feature bgp
+feature ospf
+
+! ========================================
+! Underlay Network Configuration
+! ========================================
+
+! Loopback for BGP Router-ID
+interface loopback0
+  description BGP Router-ID
+  ip address 10.255.255.1/32
+  ip router ospf UNDERLAY area 0.0.0.0
+
+! Point-to-Point Links to Leafs
+interface Ethernet1/1
+  description TO_LEAF-01
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.0/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/2
+  description TO_LEAF-02
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.2/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/3
+  description TO_LEAF-03
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.4/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/4
+  description TO_LEAF-04
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.6/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+! ========================================
+! OSPF Underlay Configuration
+! ========================================
+router ospf UNDERLAY
+  router-id 10.255.255.1
+
+! ========================================
+! BGP EVPN Overlay Configuration
+! ========================================
+router bgp 65000
+  router-id 10.255.255.1
+  address-family l2vpn evpn
+    retain route-target all
+
+  ! BGP Peering to LEAF-01
+  neighbor 10.255.255.11
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+  ! BGP Peering to LEAF-02
+  neighbor 10.255.255.12
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+  ! BGP Peering to LEAF-03
+  neighbor 10.255.255.13
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+  ! BGP Peering to LEAF-04
+  neighbor 10.255.255.14
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client

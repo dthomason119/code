@@ -1,0 +1,385 @@
+! ========================================
+! Nexus 93180YC-FX2 - LEAF-02
+! BGP EVPN VXLAN Configuration
+! vPC Peer with LEAF-01
+! ========================================
+
+hostname LEAF-02
+feature bgp
+feature ospf
+feature vn-segment-vlan-based
+feature nv overlay
+nv overlay evpn
+feature vpc
+feature lacp
+feature interface-vlan
+
+! ========================================
+! VLANs and VNI Mapping
+! ========================================
+vlan 10
+  name TENANT_A_WEB
+  vn-segment 10010
+
+vlan 11
+  name TENANT_A_APP
+  vn-segment 10011
+
+vlan 12
+  name TENANT_A_DB
+  vn-segment 10012
+
+vlan 13
+  name TENANT_B_WEB
+  vn-segment 10013
+
+vlan 14
+  name TENANT_B_APP
+  vn-segment 10014
+
+vlan 15
+  name TENANT_B_DB
+  vn-segment 10015
+
+vlan 16
+  name TENANT_C_WEB
+  vn-segment 10016
+
+vlan 17
+  name TENANT_C_APP
+  vn-segment 10017
+
+vlan 18
+  name TENANT_C_DB
+  vn-segment 10018
+
+vlan 19
+  name TENANT_D_WEB
+  vn-segment 10019
+
+vlan 20
+  name TENANT_D_APP
+  vn-segment 10020
+
+! vPC Peer-Link VLAN
+vlan 3000
+  name VPC_PEER_LINK
+
+! ========================================
+! VRF Configuration
+! ========================================
+vrf context TENANT_A
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vrf context TENANT_B
+  vni 50002
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vrf context TENANT_C
+  vni 50003
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vrf context TENANT_D
+  vni 50004
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+! ========================================
+! vPC Configuration
+! ========================================
+vpc domain 1
+  peer-keepalive destination 192.168.100.1 source 192.168.100.2
+  peer-gateway
+  layer3 peer-router
+  ip arp synchronize
+
+interface Ethernet1/47
+  description VPC_PEER_LINK
+  switchport mode trunk
+  switchport trunk allowed vlan 3000
+  channel-group 100 mode active
+
+interface Ethernet1/48
+  description VPC_PEER_LINK
+  switchport mode trunk
+  switchport trunk allowed vlan 3000
+  channel-group 100 mode active
+
+interface port-channel100
+  description VPC_PEER_LINK
+  switchport mode trunk
+  switchport trunk allowed vlan 3000
+  vpc peer-link
+
+! vPC Keepalive Link
+interface mgmt0
+  vrf member management
+  ip address 192.168.100.2/24
+
+! ========================================
+! Underlay Network Configuration
+! ========================================
+
+! Loopback for BGP Router-ID
+interface loopback0
+  description BGP Router-ID
+  ip address 10.255.255.12/32
+  ip router ospf UNDERLAY area 0.0.0.0
+
+! Loopback for VTEP (Anycast with LEAF-01)
+interface loopback1
+  description VTEP
+  ip address 10.255.255.100/32
+  ip address 10.255.255.112/32 secondary
+  ip router ospf UNDERLAY area 0.0.0.0
+
+! Uplinks to Spines
+interface Ethernet1/1
+  description TO_SPINE-01
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.1.3/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/2
+  description TO_SPINE-02
+  no switchport
+  mtu 9216
+  medium p2p
+  ip address 10.0.2.3/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+! ========================================
+! OSPF Underlay Configuration
+! ========================================
+router ospf UNDERLAY
+  router-id 10.255.255.12
+
+! ========================================
+! SVI Configuration (Gateways)
+! ========================================
+
+! TENANT_A SVIs
+interface Vlan10
+  description TENANT_A_WEB
+  no shutdown
+  vrf member TENANT_A
+  ip address 10.10.10.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan11
+  description TENANT_A_APP
+  no shutdown
+  vrf member TENANT_A
+  ip address 10.10.11.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan12
+  description TENANT_A_DB
+  no shutdown
+  vrf member TENANT_A
+  ip address 10.10.12.1/24
+  fabric forwarding mode anycast-gateway
+
+! TENANT_B SVIs
+interface Vlan13
+  description TENANT_B_WEB
+  no shutdown
+  vrf member TENANT_B
+  ip address 10.10.13.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan14
+  description TENANT_B_APP
+  no shutdown
+  vrf member TENANT_B
+  ip address 10.10.14.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan15
+  description TENANT_B_DB
+  no shutdown
+  vrf member TENANT_B
+  ip address 10.10.15.1/24
+  fabric forwarding mode anycast-gateway
+
+! TENANT_C SVIs
+interface Vlan16
+  description TENANT_C_WEB
+  no shutdown
+  vrf member TENANT_C
+  ip address 10.10.16.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan17
+  description TENANT_C_APP
+  no shutdown
+  vrf member TENANT_C
+  ip address 10.10.17.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan18
+  description TENANT_C_DB
+  no shutdown
+  vrf member TENANT_C
+  ip address 10.10.18.1/24
+  fabric forwarding mode anycast-gateway
+
+! TENANT_D SVIs
+interface Vlan19
+  description TENANT_D_WEB
+  no shutdown
+  vrf member TENANT_D
+  ip address 10.10.19.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan20
+  description TENANT_D_APP
+  no shutdown
+  vrf member TENANT_D
+  ip address 10.10.20.1/24
+  fabric forwarding mode anycast-gateway
+
+! ========================================
+! Anycast Gateway MAC
+! ========================================
+fabric forwarding anycast-gateway-mac 0000.2222.3333
+
+! ========================================
+! VXLAN/NVE Configuration
+! ========================================
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback1
+  
+  ! Layer 2 VNI Mappings
+  member vni 10010
+    mcast-group 239.1.1.10
+  member vni 10011
+    mcast-group 239.1.1.11
+  member vni 10012
+    mcast-group 239.1.1.12
+  member vni 10013
+    mcast-group 239.1.1.13
+  member vni 10014
+    mcast-group 239.1.1.14
+  member vni 10015
+    mcast-group 239.1.1.15
+  member vni 10016
+    mcast-group 239.1.1.16
+  member vni 10017
+    mcast-group 239.1.1.17
+  member vni 10018
+    mcast-group 239.1.1.18
+  member vni 10019
+    mcast-group 239.1.1.19
+  member vni 10020
+    mcast-group 239.1.1.20
+  
+  ! Layer 3 VNI Mappings (VRF)
+  member vni 50001 associate-vrf
+  member vni 50002 associate-vrf
+  member vni 50003 associate-vrf
+  member vni 50004 associate-vrf
+
+! ========================================
+! EVPN Configuration
+! ========================================
+evpn
+  vni 10010 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10011 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10012 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10013 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10014 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10015 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10016 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10017 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10018 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10019 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 10020 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+! ========================================
+! BGP EVPN Overlay Configuration
+! ========================================
+router bgp 65000
+  router-id 10.255.255.12
+  address-family l2vpn evpn
+  
+  ! BGP Peering to SPINE-01
+  neighbor 10.255.255.1
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+  ! BGP Peering to SPINE-02
+  neighbor 10.255.255.2
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+  ! VRF BGP Configuration
+  vrf TENANT_A
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+  vrf TENANT_B
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+  vrf TENANT_C
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+  vrf TENANT_D
+    address-family ipv4 unicast
+      advertise l2vpn evpn
