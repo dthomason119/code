@@ -1,0 +1,10 @@
+# Security: Never commit private keys
+github_rsa
+*.pem
+*.key
+id_rsa
+id_ecdsa
+id_ed25519
+
+# Only the public key should be safe to commit
+# github_rsa.pub is OK to commit
