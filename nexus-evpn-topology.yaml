@@ -1,15 +1,22 @@
 lab:
-  description: Cisco Nexus 9K BGP EVPN VXLAN Topology - 2 Spines, 6 Leafs with vPC
+  description: Cisco Nexus 9K BGP EVPN VXLAN Topology - 2 Spines, 6 Leafs with vPC + 4 Hosts
   notes: |-
     BGP EVPN VXLAN Spine-Leaf Architecture
     - 2 Spine Switches (Route Reflectors)
     - 6 Leaf Switches in 3 vPC pairs
+    - 4 Ubuntu Hosts connected to first 4 leafs
     - VLANs 10-20 mapped to VNIs
     - 4 Tenant VRFs with L3 VNI
     
-    CML 2.9 Compatible (compute_id removed)
+    Host Configuration:
+    - HOST-01: 10.10.10.10/24 (VLAN 10 - TENANT_A_WEB)
+    - HOST-02: 10.10.11.10/24 (VLAN 11 - TENANT_A_APP)
+    - HOST-03: 10.10.13.10/24 (VLAN 13 - TENANT_B_WEB)
+    - HOST-04: 10.10.14.10/24 (VLAN 14 - TENANT_B_APP)
+    
+    CML 2.9 Compatible
   title: Nexus-9K-EVPN-VXLAN
-  version: 0.2.1
+  version: 0.3.0
 
 nodes:
   - id: n0
@@ -109,6 +116,10 @@ nodes:
         label: Ethernet1/2
         slot: 2
         type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
+        type: physical
       - id: i47
         label: Ethernet1/47
         slot: 47
@@ -138,6 +149,10 @@ nodes:
       - id: i2
         label: Ethernet1/2
         slot: 2
+        type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
         type: physical
       - id: i47
         label: Ethernet1/47
@@ -169,6 +184,10 @@ nodes:
         label: Ethernet1/2
         slot: 2
         type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
+        type: physical
       - id: i47
         label: Ethernet1/47
         slot: 47
@@ -198,6 +217,10 @@ nodes:
       - id: i2
         label: Ethernet1/2
         slot: 2
+        type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
         type: physical
       - id: i47
         label: Ethernet1/47
@@ -266,6 +289,114 @@ nodes:
       - id: i48
         label: Ethernet1/48
         slot: 48
+        type: physical
+
+  - id: n8
+    label: HOST-01
+    node_definition: ubuntu
+    x: -600
+    y: 300
+    configuration: |
+      #cloud-config
+      hostname: host-01
+      system_info:
+        default_user:
+          name: admin
+      runcmd:
+        - ip addr add 10.10.10.10/24 dev ens2
+        - ip route add default via 10.10.10.1
+        - echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    image_definition: ubuntu-22-04
+    tags: ["host", "vlan10"]
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+      - id: i1
+        label: eth1
+        slot: 1
+        type: physical
+
+  - id: n9
+    label: HOST-02
+    node_definition: ubuntu
+    x: -400
+    y: 300
+    configuration: |
+      #cloud-config
+      hostname: host-02
+      system_info:
+        default_user:
+          name: admin
+      runcmd:
+        - ip addr add 10.10.11.10/24 dev ens2
+        - ip route add default via 10.10.11.1
+        - echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    image_definition: ubuntu-22-04
+    tags: ["host", "vlan11"]
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+      - id: i1
+        label: eth1
+        slot: 1
+        type: physical
+
+  - id: n10
+    label: HOST-03
+    node_definition: ubuntu
+    x: -200
+    y: 300
+    configuration: |
+      #cloud-config
+      hostname: host-03
+      system_info:
+        default_user:
+          name: admin
+      runcmd:
+        - ip addr add 10.10.13.10/24 dev ens2
+        - ip route add default via 10.10.13.1
+        - echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    image_definition: ubuntu-22-04
+    tags: ["host", "vlan13"]
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+      - id: i1
+        label: eth1
+        slot: 1
+        type: physical
+
+  - id: n11
+    label: HOST-04
+    node_definition: ubuntu
+    x: 0
+    y: 300
+    configuration: |
+      #cloud-config
+      hostname: host-04
+      system_info:
+        default_user:
+          name: admin
+      runcmd:
+        - ip addr add 10.10.14.10/24 dev ens2
+        - ip route add default via 10.10.14.1
+        - echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    image_definition: ubuntu-22-04
+    tags: ["host", "vlan14"]
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+      - id: i1
+        label: eth1
+        slot: 1
         type: physical
 
 links:
@@ -394,3 +525,32 @@ links:
     i1: i48
     i2: i48
     label: vPC-PeerLink-Pair3-Eth48
+
+  # Host Links
+  - id: l18
+    n1: n2
+    n2: n8
+    i1: i3
+    i2: i1
+    label: LEAF-01-Eth1/3-to-HOST-01
+
+  - id: l19
+    n1: n3
+    n2: n9
+    i1: i3
+    i2: i1
+    label: LEAF-02-Eth1/3-to-HOST-02
+
+  - id: l20
+    n1: n4
+    n2: n10
+    i1: i3
+    i2: i1
+    label: LEAF-03-Eth1/3-to-HOST-03
+
+  - id: l21
+    n1: n5
+    n2: n11
+    i1: i3
+    i2: i1
+    label: LEAF-04-Eth1/3-to-HOST-04
