@@ -16,7 +16,7 @@ lab:
     
     CML 2.9 Compatible
   title: Nexus-9K-EVPN-VXLAN
-  version: 0.3.0
+  version: 0.3.1
 
 nodes:
   - id: n0
@@ -310,11 +310,11 @@ nodes:
     tags: ["host", "vlan10"]
     interfaces:
       - id: i0
-        label: eth0
+        label: ens2
         slot: 0
         type: physical
       - id: i1
-        label: eth1
+        label: ens3
         slot: 1
         type: physical
 
@@ -337,11 +337,11 @@ nodes:
     tags: ["host", "vlan11"]
     interfaces:
       - id: i0
-        label: eth0
+        label: ens2
         slot: 0
         type: physical
       - id: i1
-        label: eth1
+        label: ens3
         slot: 1
         type: physical
 
@@ -364,11 +364,11 @@ nodes:
     tags: ["host", "vlan13"]
     interfaces:
       - id: i0
-        label: eth0
+        label: ens2
         slot: 0
         type: physical
       - id: i1
-        label: eth1
+        label: ens3
         slot: 1
         type: physical
 
@@ -391,11 +391,11 @@ nodes:
     tags: ["host", "vlan14"]
     interfaces:
       - id: i0
-        label: eth0
+        label: ens2
         slot: 0
         type: physical
       - id: i1
-        label: eth1
+        label: ens3
         slot: 1
         type: physical
 
