@@ -1,0 +1,435 @@
+lab:
+  description: Cisco Nexus 9K BGP EVPN VXLAN Topology - 2 Spines, 6 Leafs with vPC
+  notes: |-
+    BGP EVPN VXLAN Spine-Leaf Architecture
+    - 2 Spine Switches (Route Reflectors)
+    - 6 Leaf Switches in 3 vPC pairs
+    - VLANs 10-20 mapped to VNIs
+    - 4 Tenant VRFs with L3 VNI
+  title: Nexus-9K-EVPN-VXLAN
+  version: 0.0.4
+
+nodes:
+  - id: n0
+    label: SPINE-01
+    node_definition: nxosv9000
+    x: -400
+    y: -200
+    configuration: |-
+      hostname SPINE-01
+    image_definition: nxosv-9000
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+      - id: i4
+        label: Ethernet1/4
+        slot: 4
+        type: physical
+      - id: i5
+        label: Ethernet1/5
+        slot: 5
+        type: physical
+      - id: i6
+        label: Ethernet1/6
+        slot: 6
+        type: physical
+
+  - id: n1
+    label: SPINE-02
+    node_definition: nxosv9000
+    x: 400
+    y: -200
+    configuration: |-
+      hostname SPINE-02
+    image_definition: nxosv-9000
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i3
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+      - id: i4
+        label: Ethernet1/4
+        slot: 4
+        type: physical
+      - id: i5
+        label: Ethernet1/5
+        slot: 5
+        type: physical
+      - id: i6
+        label: Ethernet1/6
+        slot: 6
+        type: physical
+
+  - id: n2
+    label: LEAF-01
+    node_definition: nxosv9000
+    x: -600
+    y: 100
+    configuration: |-
+      hostname LEAF-01
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-1"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+  - id: n3
+    label: LEAF-02
+    node_definition: nxosv9000
+    x: -400
+    y: 100
+    configuration: |-
+      hostname LEAF-02
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-1"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+  - id: n4
+    label: LEAF-03
+    node_definition: nxosv9000
+    x: -200
+    y: 100
+    configuration: |-
+      hostname LEAF-03
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-2"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+  - id: n5
+    label: LEAF-04
+    node_definition: nxosv9000
+    x: 0
+    y: 100
+    configuration: |-
+      hostname LEAF-04
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-2"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+  - id: n6
+    label: LEAF-05
+    node_definition: nxosv9000
+    x: 200
+    y: 100
+    configuration: |-
+      hostname LEAF-05
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-3"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+  - id: n7
+    label: LEAF-06
+    node_definition: nxosv9000
+    x: 400
+    y: 100
+    configuration: |-
+      hostname LEAF-06
+    image_definition: nxosv-9000
+    tags: ["vpc-pair-3"]
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i2
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i47
+        label: Ethernet1/47
+        slot: 47
+        type: physical
+      - id: i48
+        label: Ethernet1/48
+        slot: 48
+        type: physical
+
+links:
+  # SPINE-01 to Leafs
+  - id: l0
+    i1:
+      node: n0
+      interface: i1
+    i2:
+      node: n2
+      interface: i1
+    label: SPINE-01-to-LEAF-01
+
+  - id: l1
+    i1:
+      node: n0
+      interface: i2
+    i2:
+      node: n3
+      interface: i1
+    label: SPINE-01-to-LEAF-02
+
+  - id: l2
+    i1:
+      node: n0
+      interface: i3
+    i2:
+      node: n4
+      interface: i1
+    label: SPINE-01-to-LEAF-03
+
+  - id: l3
+    i1:
+      node: n0
+      interface: i4
+    i2:
+      node: n5
+      interface: i1
+    label: SPINE-01-to-LEAF-04
+
+  - id: l4
+    i1:
+      node: n0
+      interface: i5
+    i2:
+      node: n6
+      interface: i1
+    label: SPINE-01-to-LEAF-05
+
+  - id: l5
+    i1:
+      node: n0
+      interface: i6
+    i2:
+      node: n7
+      interface: i1
+    label: SPINE-01-to-LEAF-06
+
+  # SPINE-02 to Leafs
+  - id: l6
+    i1:
+      node: n1
+      interface: i1
+    i2:
+      node: n2
+      interface: i2
+    label: SPINE-02-to-LEAF-01
+
+  - id: l7
+    i1:
+      node: n1
+      interface: i2
+    i2:
+      node: n3
+      interface: i2
+    label: SPINE-02-to-LEAF-02
+
+  - id: l8
+    i1:
+      node: n1
+      interface: i3
+    i2:
+      node: n4
+      interface: i2
+    label: SPINE-02-to-LEAF-03
+
+  - id: l9
+    i1:
+      node: n1
+      interface: i4
+    i2:
+      node: n5
+      interface: i2
+    label: SPINE-02-to-LEAF-04
+
+  - id: l10
+    i1:
+      node: n1
+      interface: i5
+    i2:
+      node: n6
+      interface: i2
+    label: SPINE-02-to-LEAF-05
+
+  - id: l11
+    i1:
+      node: n1
+      interface: i6
+    i2:
+      node: n7
+      interface: i2
+    label: SPINE-02-to-LEAF-06
+
+  # vPC Peer-Links - LEAF-01 and LEAF-02
+  - id: l12
+    i1:
+      node: n2
+      interface: i47
+    i2:
+      node: n3
+      interface: i47
+    label: vPC-PeerLink-1a
+
+  - id: l13
+    i1:
+      node: n2
+      interface: i48
+    i2:
+      node: n3
+      interface: i48
+    label: vPC-PeerLink-1b
+
+  # vPC Peer-Links - LEAF-03 and LEAF-04
+  - id: l14
+    i1:
+      node: n4
+      interface: i47
+    i2:
+      node: n5
+      interface: i47
+    label: vPC-PeerLink-2a
+
+  - id: l15
+    i1:
+      node: n4
+      interface: i48
+    i2:
+      node: n5
+      interface: i48
+    label: vPC-PeerLink-2b
+
+  # vPC Peer-Links - LEAF-05 and LEAF-06
+  - id: l16
+    i1:
+      node: n6
+      interface: i47
+    i2:
+      node: n7
+      interface: i47
+    label: vPC-PeerLink-3a
+
+  - id: l17
+    i1:
+      node: n6
+      interface: i48
+    i2:
+      node: n7
+      interface: i48
+    label: vPC-PeerLink-3b
